@@ -1,0 +1,25 @@
+# Quartus temporary files
+db/
+incremental_db/
+simulation/
+greybox_tmp/
+*.qws
+*.qdf
+*.rpt
+*.smsg
+*.summary
+*.jdi
+*.pin
+*.done
+*.qws
+*.bak
+
+# ModelSim temporary files
+work/
+transcript
+*.wlf
+vsim.wlf
+
+# Python compiled files
+__pycache__/
+*.pyc
