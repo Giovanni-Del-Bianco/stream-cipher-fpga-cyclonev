@@ -172,39 +172,34 @@ The defining architectural breakthrough of `Stream_cipher_v1_ROM` is the conscio
 
 The static $256 \times 8\text{-bit}$ AES S-Box array is directly mapped onto the physical **M10K embedded memory blocks** native to the Cyclone V architecture.
 
-* 
-**The LUT Variant** distributes its lookup graph chaoticly across the chip, consuming **61 ALMs** and **19 registers**.
+* **The LUT Variant** distributes its lookup graph chaoticly across the chip, consuming **61 ALMs** and **19 registers**.
 
 
-* 
-**The ROM Variant** isolates the table data completely inside the internal hardwired memory cell lines, utilizing exactly **2,048 block memory bits**. This strategy scales down general-purpose logic consumption to just **25 ALMs** and **13 registers**—achieving a **59% reduction in logic area** and a **31% reduction in the register footprint**.
+* **The ROM Variant** isolates the table data completely inside the internal hardwired memory cell lines, utilizing exactly **2,048 block memory bits**. This strategy scales down general-purpose logic consumption to just **25 ALMs** and **13 registers**—achieving a **59% reduction in logic area** and a **31% reduction in the register footprint**.
 
 
-
----
 
 ### 2. Quantifying Hardware Efficiency (Area Density)
 
 To provide an objective, data-driven justification for the final architecture, a formal **Hardware Area Efficiency metric ($E$)** is defined. This metric measures the performance density of the circuit by evaluating how much operational throughput the core can squeeze out of every individual Adaptive Logic Module (ALM) utilized on the chip fabric :
 
-$$E = \frac{\text{Throughput}}{\text{Area}} \quad \left[\frac{\text{MB/s}}{\text{ALM}}\right] \quad \text{\cite{1012-1014}}$$
+$$E = \frac{\text{Throughput}}{\text{Area}} \quad \left[\frac{\text{MB/s}}{\text{ALM}}\right] \quad $$
 
 Given the steady-state nominal throughput of $20\text{ MB/s}$ enforced by the outer handshake protocol interface layer for both implementations, the comparative mathematical evaluation yields:
 
 * **Distributed Logic Implementation (LUT Model):**
 
-$$E_{LUT} = \frac{20\text{ MB/s}}{61\text{ ALM}} \approx 0.328\text{ MB/s/ALM} \quad \text{\cite{1017-1020}}$$
+$$E_{LUT} = \frac{20\text{ MB/s}}{61\text{ ALM}} \approx 0.328\text{ MB/s/ALM} \quad $$
 
 
 * **Embedded Memory Implementation (ROM Model):**
 
-$$E_{ROM} = \frac{20\text{ MB/s}}{25\text{ ALM}} = 0.800\text{ MB/s/ALM} \quad \text{\cite{1021-1024}}$$
+$$E_{ROM} = \frac{20\text{ MB/s}}{25\text{ ALM}} = 0.800\text{ MB/s/ALM} \quad $$
 
 
 
 The empirical density calculations prove that the ROM-based variant is **2.4 times more efficient** than the LUT model in terms of silicon area utilization. Because the M10K blocks are standalone hardware structures already baked into the physical FPGA layout, migrating the static lookup data into them represents a **virtually "zero cost" area optimization** . It frees up critical generic logic assets that can be reassigned to other intensive computational operations.
 
----
 
 ### 3. System-on-Chip (SoC) Scalability
 
@@ -222,39 +217,36 @@ The defining architectural breakthrough of `Stream_cipher_v1_ROM` is the conscio
 
 The static $256 \times 8\text{-bit}$ AES S-Box array is directly mapped onto the physical **M10K embedded memory blocks** native to the Cyclone V architecture.
 
-* 
-**The LUT Variant** distributes its lookup graph chaoticly across the chip, consuming **61 ALMs** and **19 registers**.
+* **The LUT Variant** distributes its lookup graph chaoticly across the chip, consuming **61 ALMs** and **19 registers**.
 
 
-* 
-**The ROM Variant** isolates the table data completely inside the internal hardwired memory cell lines, utilizing exactly **2,048 block memory bits**. This strategy scales down general-purpose logic consumption to just **25 ALMs** and **13 registers**—achieving a **59% reduction in logic area** and a **31% reduction in the register footprint**.
+* **The ROM Variant** isolates the table data completely inside the internal hardwired memory cell lines, utilizing exactly **2,048 block memory bits**. This strategy scales down general-purpose logic consumption to just **25 ALMs** and **13 registers**—achieving a **59% reduction in logic area** and a **31% reduction in the register footprint**.
 
 
 
----
 
 ### 2. Quantifying Hardware Efficiency (Area Density)
 
 To provide an objective, data-driven justification for the final architecture, a formal **Hardware Area Efficiency metric ($E$)** is defined. This metric measures the performance density of the circuit by evaluating how much operational throughput the core can squeeze out of every individual Adaptive Logic Module (ALM) utilized on the chip fabric :
 
-$$E = \frac{\text{Throughput}}{\text{Area}} \quad \left[\frac{\text{MB/s}}{\text{ALM}}\right] \quad \text{\cite{1012-1014}}$$
+$$E = \frac{\text{Throughput}}{\text{Area}} \quad \left[\frac{\text{MB/s}}{\text{ALM}}\right] \quad $$
 
 Given the steady-state nominal throughput of $20\text{ MB/s}$ enforced by the outer handshake protocol interface layer for both implementations, the comparative mathematical evaluation yields:
 
 * **Distributed Logic Implementation (LUT Model):**
 
-$$E_{LUT} = \frac{20\text{ MB/s}}{61\text{ ALM}} \approx 0.328\text{ MB/s/ALM} \quad \text{\cite{1017-1020}}$$
+$$E_{LUT} = \frac{20\text{ MB/s}}{61\text{ ALM}} \approx 0.328\text{ MB/s/ALM} \quad $$
 
 
 * **Embedded Memory Implementation (ROM Model):**
 
-$$E_{ROM} = \frac{20\text{ MB/s}}{25\text{ ALM}} = 0.800\text{ MB/s/ALM} \quad \text{\cite{1021-1024}}$$
+$$E_{ROM} = \frac{20\text{ MB/s}}{25\text{ ALM}} = 0.800\text{ MB/s/ALM} \quad $$
 
 
 
 The empirical density calculations prove that the ROM-based variant is **2.4 times more efficient** than the LUT model in terms of silicon area utilization. Because the M10K blocks are standalone hardware structures already baked into the physical FPGA layout, migrating the static lookup data into them represents a **virtually "zero cost" area optimization** . It frees up critical generic logic assets that can be reassigned to other intensive computational operations.
 
----
+
 
 ### 3. System-on-Chip (SoC) Scalability
 
@@ -272,12 +264,10 @@ To guarantee that the SystemVerilog RTL description complies with the mathematic
 
 The verification flow acts as a decoupled pipeline :
 
-* 
-**Algorithmic Computation:** The Python script models the precise sequential data progression of the hardware. It processes text strings or raw hexadecimal arrays and handles the circular S-Box memory index manipulation using the modulo operation.
+* **Algorithmic Computation:** The Python script models the precise sequential data progression of the hardware. It processes text strings or raw hexadecimal arrays and handles the circular S-Box memory index manipulation using the modulo operation.
 
 
-* 
-**Stimulus Serialization:** Upon calculating the exact cryptographic transformations, the script automatically generates formatted external test vector files with the `.tv` extension (`_input.tv` for hardware stimuli and `_expected.tv` for the definitive Golden Reference) .
+* **Stimulus Serialization:** Upon calculating the exact cryptographic transformations, the script automatically generates formatted external test vector files with the `.tv` extension (`_input.tv` for hardware stimuli and `_expected.tv` for the definitive Golden Reference) .
 
 
 ```mermaid
@@ -366,8 +356,6 @@ The checking module utilizes the case inequality operator (`!==`) instead of the
 
 
 
----
-
 ### 3. Stress Testing and Corner Case Resiliency
 
 To validate the structural safety lines of the Control Unit, the design was subjected to aggressive edge-case testing through independent test frameworks:
@@ -376,12 +364,10 @@ To validate the structural safety lines of the Control Unit, the design was subj
 
 The verification suite `tb_stream_cipher_Slow.sv` simulates an unresponsive external master by intentionally keeping the `in_valid` flag locked at logic high for multiple consecutive clock cycles after an output is ready .
 
-* 
-**The Hardening Check:** The FSM handles the stall by freezing progression inside the `ST_WAIT` state .
+* **The Hardening Check:** The FSM handles the stall by freezing progression inside the `ST_WAIT` state .
 
 
-* 
-**The Outcome:** The internal counter halts its count progression, and the output bus remains stable, preventing "double-counting" and verifying full immunity against slow external host interfaces .
+* **The Outcome:** The internal counter halts its count progression, and the output bus remains stable, preventing "double-counting" and verifying full immunity against slow external host interfaces .
 
 
 
@@ -389,12 +375,10 @@ The verification suite `tb_stream_cipher_Slow.sv` simulates an unresponsive exte
 
 The framework `tb_stream_cipher_Reset.sv` stress-tests system recovery by injecting an asynchronous drop on the `rst_n` wire precisely **3 ns** after a rising clock edge, right in the middle of active ROM address compilation .
 
-* 
-**The Hardening Check:** The core intercepts the falling edge of the reset signal instantaneously without waiting for the subsequent clock boundary.
+* **The Hardening Check:** The core intercepts the falling edge of the reset signal instantaneously without waiting for the subsequent clock boundary.
 
 
-* 
-**The Outcome:** The FSM breaks execution immediately, clears the data path busses, and retreats safely to the `ST_IDLE` state within a fraction of a clock cycle, certifying deterministic emergency recovery lines.
+* **The Outcome:** The FSM breaks execution immediately, clears the data path busses, and retreats safely to the `ST_IDLE` state within a fraction of a clock cycle, certifying deterministic emergency recovery lines.
 
 
 
