@@ -35,15 +35,13 @@ The initial exploratory prototype, `Stream_cipher_v1_LUT`, handles the S-Box map
 
 While this approach yields an unclocked, immediate output propagation right after address evaluation, it introduces severe structural deficiencies under production workloads :
 
-* 
-**Area Saturation:** Quartus Prime is forced to synthesize the static 256-byte table using a massive, unstructured network of generic logic gates and multiplexers, consuming **61 Adaptive Logic Modules (ALMs)**. This represents a significant waste of the logical estate on assets that are inherently static.
+* **Area Saturation:** Quartus Prime is forced to synthesize the static 256-byte table using a massive, unstructured network of generic logic gates and multiplexers, consuming **61 Adaptive Logic Modules (ALMs)**. This represents a significant waste of the logical estate on assets that are inherently static.
 
 
-* 
-**Routing Congestion:** Mapping a highly irregular matrix like the AES S-Box across distributed logic cells generates a dense, unstructured interconnection network. As system complexity grows, this causes severe routing congestion during the *Place-and-Route* phase, lengthening wire paths and leading to unpredictable propagation delay skews.
+* **Routing Congestion:** Mapping a highly irregular matrix like the AES S-Box across distributed logic cells generates a dense, unstructured interconnection network. As system complexity grows, this causes severe routing congestion during the *Place-and-Route* phase, lengthening wire paths and leading to unpredictable propagation delay skews.
 
 
-* **Combinational Glitches:** Because the underlying data paths feature varying physical lengths and parasitic capacitances, intermediate logic gates do not switch simultaneously. This introduces high-frequency, parasitic switching noise—known as **combinational glitches**—onto the internal encryption buses. If these unstable signals leak or cascade into downstream mixing stages (such as the XOR unit), they can increase dynamic power consumption and compromise the deterministic safety lines of the hardware.
+* **Combinational Glitches:** Because the underlying data paths feature varying physical lengths and parasitic capacitances, intermediate logic gates do not switch simultaneously. This introduces high-frequency, parasitic switching noise known as **combinational glitches** onto the internal encryption buses. If these unstable signals leak or cascade into downstream mixing stages (such as the XOR unit), they can increase dynamic power consumption and compromise the deterministic safety lines of the hardware.
 
 
 
@@ -90,20 +88,16 @@ The hardware architecture is organized following a strict structural hierarchy i
 
 The system architecture integrates four specialized submodules connected through internal 1-bit and 8-bit signal buses :
 
-* 
-**`i_ctrl` (Control Unit):** Coordinates the execution flow of the system. It interprets incoming protocol indicators and drives internal data path control lines, handling the state machine transitions.
+* **`i_ctrl` (Control Unit):** Coordinates the execution flow of the system. It interprets incoming protocol indicators and drives internal data path control lines, handling the state machine transitions.
 
 
-* 
-**`i_counter` (Index Counter):** An 8-bit priority-driven sequential register . It handles asynchronous clearing (`rst_n`), parallel loading of the secret initial key material (`load_en`), and synchronous value increments (`count_en`) to generate the changing address space .
+* **`i_counter` (Index Counter):** An 8-bit priority-driven sequential register . It handles asynchronous clearing (`rst_n`), parallel loading of the secret initial key material (`load_en`), and synchronous value increments (`count_en`) to generate the changing address space .
 
 
-* 
-**`i_sbox` (S-Box Memory):** Encapsulates the complete AES non-linear mapping constants. It operates as a fully synchronous, registered lookup structure that fetches a unique keystream segment during each cycle.
+* **`i_sbox` (S-Box Memory):** Encapsulates the complete AES non-linear mapping constants. It operates as a fully synchronous, registered lookup structure that fetches a unique keystream segment during each cycle.
 
 
-* 
-**`i_xor` (XOR Unit):** A purely combinational processing block (`always_comb`). It instantly applies a bitwise eXclusive OR operation between the message stream and the retrieved keystream byte to execute encryption or decryption dynamically.
+* **`i_xor` (XOR Unit):** A purely combinational processing block (`always_comb`). It instantly applies a bitwise eXclusive OR operation between the message stream and the retrieved keystream byte to execute encryption or decryption dynamically.
 
 
 
@@ -115,32 +109,16 @@ The physical hardware ports are mapped according to the following specifications
 
 | Signal Name | Port Direction | Width (Bits) | Hardware/Protocol Function |
 | --- | --- | --- | --- |
-| `clk` | Input | 1 | Master system clock domain (active on rising edges).
+| `clk` | Input | 1 | Master system clock domain (active on rising edges).|
+| `rst_n` | Input | 1 | Asynchronous active-low reset for immediate state clearing.|
+| `new_msg` | Input | 1 | Key configuration flag; triggers parallel loading of the key `K`.|
+| `in_valid` | Input | 1 | Control flag asserted by the host to mark valid input data.|
+| `key_in` | Input | 8 | Secret 8-bit initialization key `K`.|
+| `data_in` | Input | 8 | Raw plaintext or ciphertext byte to be processed.|
+| `out_ready` | Output | 1 | Handshake flag asserted by the cipher when output is stable.|
+| `data_out` | Output | 8 | Valid encrypted or decrypted output byte.|
 
- |
-| `rst_n` | Input | 1 | Asynchronous active-low reset for immediate state clearing.
 
- |
-| `new_msg` | Input | 1 | Key configuration flag; triggers parallel loading of the key `K`.
-
- |
-| `in_valid` | Input | 1 | Control flag asserted by the host to mark valid input data.
-
- |
-| `key_in` | Input | 8 | Secret 8-bit initialization key `K`.
-
- |
-| `data_in` | Input | 8 | Raw plaintext or ciphertext byte to be processed.
-
- |
-| `out_ready` | Output | 1 | Handshake flag asserted by the cipher when output is stable.
-
- |
-| `data_out` | Output | 8 | Valid encrypted or decrypted output byte.
-
- |
-
----
 
 ### 3. Handshake Flow Control and Throughput Capping
 
@@ -152,24 +130,19 @@ The protocol guidelines dictate that an external master must hold the `in_valid`
 
 Because this handshake logic requires multiple phase transitions, it acts as the primary bottleneck for system execution times:
 
-1. 
-**Cycle 1 (`ST_IDLE`):** The system samples the input bus and detects that `in_valid == 1`, moving the core into the processing timeline.
+1. **Cycle 1 (`ST_IDLE`):** The system samples the input bus and detects that `in_valid == 1`, moving the core into the processing timeline.
 
 
-2. 
-**Cycle 2 (`ST_ROM_WAIT`):** A mandatory wait cycle introduced to absorb the internal registered clock latency of the physical M10K block RAM .
+2. **Cycle 2 (`ST_ROM_WAIT`):** A mandatory wait cycle introduced to absorb the internal registered clock latency of the physical M10K block RAM .
 
 
-3. 
-**Cycle 3 (`ST_READY`):** The keystream byte stabilizes. The core drives `out_ready = 1` and asserts `count_en` to increment the address counter .
+3. **Cycle 3 (`ST_READY`):** The keystream byte stabilizes. The core drives `out_ready = 1` and asserts `count_en` to increment the address counter .
 
 
-4. 
-**Cycle 4 (`ST_WAIT`):** Safety gate. The core blocks further calculation until the host responds by driving `in_valid = 0`, ensuring precise byte-by-byte tracking .
+4. **Cycle 4 (`ST_WAIT`):** Safety gate. The core blocks further calculation until the host responds by driving `in_valid = 0`, ensuring precise byte-by-byte tracking .
 
 
-5. 
-**Cycle 5 (`Return to Idle`):** The handshake finishes cleanly, allowing the internal control registers to reset for the next operation.
+5. **Cycle 5 (`Return to Idle`):** The handshake finishes cleanly, allowing the internal control registers to reset for the next operation.
 
 
 
@@ -177,15 +150,15 @@ Because this handshake logic requires multiple phase transitions, it acts as the
 
 This 5-cycle transactional sequence is implemented identically within both the LUT and ROM architectures to maintain a unified system interface. At a baseline frequency of $f_{CLK} = 100\text{ MHz}$, the system period is defined as:
 
-$$T_{CLK} = \frac{1}{100\text{ MHz}} = 10\text{ ns} \quad \text{\cite{581}}$$
+$$T_{CLK} = \frac{1}{100\text{ MHz}} = 10\text{ ns} \quad $$
 
 The total structural latency ($L$) for a single transaction translates to:
 
-$$L = L_{CC} \times T_{CLK} = 5 \times 10\text{ ns} = 50\text{ ns} \quad \text{\cite{594-595}}$$
+$$L = L_{CC} \times T_{CLK} = 5 \times 10\text{ ns} = 50\text{ ns} \quad $$
 
 Therefore, the maximum achievable system throughput under steady-state conditions is mathematically capped at:
 
-$$\text{Throughput} = \frac{1\text{ Byte}}{50\text{ ns}} = 20\text{ MB/s} \quad (160\text{ Mbit/s}) \quad \text{\cite{611, 613, 615}}$$
+$$\text{Throughput} = \frac{1\text{ Byte}}{50\text{ ns}} = 20\text{ MB/s} \quad (160\text{ Mbit/s}) \quad $$
 
 This proof demonstrates that the combinational version (`Stream_cipher_v1_LUT`) cannot outperform the synchronous variant (`Stream_cipher_v1_ROM`) in data processing speed. Since the outer communication layer forces a fixed 5-cycle envelope, the immediate execution time of the LUT S-Box is effectively wasted while waiting for handshake transitions, validating the choice of a block-RAM structure.
 
