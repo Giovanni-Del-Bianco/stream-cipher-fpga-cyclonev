@@ -9,33 +9,15 @@
 
 | Technical Parameter | Specification Details |
 | --- | --- |
-| **👤 Authors** | <br>**Giovanni Del Bianco, Federico Pucci** 
-
- |
-| **💻 Hardware Description** | <br>**SystemVerilog (IEEE 1800 Standard)** 
-
- |
-| **🛠️ Verification & Co-Design** | <br>**Python 3 (Golden Model & Test Vector Generation)** 
-
- |
-| **⚙️ Synthesis & EDA Tools** | <br>**Intel Quartus Prime Lite Edition v25.1, ModelSim** 
-
- |
-| **🎯 Silicon Target** | <br>**Intel Cyclone V GX FPGA (5CGXFC9D6F27C7)** 
-
- |
-| **⏱️ Design Clock Target** | <br>**100 MHz nominal frequency ($T_{clk} = 10\text{ ns}$)** 
-
- |
-| **🚀 Operational Performance** | <br>**20 MB/s (160 Mbit/s) constant deterministic throughput** 
-
- |
-| **🧠 Key Optimization** | <br>**Synchronous ROM block inference via embedded M10K cells** 
-
- |
-| **📊 Hardware Saving** | <br>**-59% ALM utilization and -31% Register footprint vs. LUT variant** 
-
- |
+| **👤 Authors** | **Giovanni Del Bianco, Federico Pucci** |
+| **💻 Hardware Description** | **SystemVerilog (IEEE 1800 Standard)** |
+| **🛠️ Verification & Co-Design** | **Python 3 (Golden Model & Test Vector Generation)** |
+| **⚙️ Synthesis & EDA Tools** | **Intel Quartus Prime Lite Edition v25.1, ModelSim** |
+| **🎯 Silicon Target** | **Intel Cyclone V GX FPGA (5CGXFC9D6F27C7)** |
+| **⏱️ Design Clock Target** | **100 MHz nominal frequency ($T_{clk} = 10\text{ ns}$)** |
+| **🚀 Operational Performance** | **20 MB/s (160 Mbit/s) constant deterministic throughput** |
+| **🧠 Key Optimization** | **Synchronous ROM block inference via embedded M10K cells** |
+| **📊 Hardware Saving** | **-59% ALM utilization and -31% Register footprint vs. LUT variant** |
 
 
 
